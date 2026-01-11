@@ -143,6 +143,22 @@ export default function Peta() {
     );
   };
 
+  const handleGetDirections = (coords: [number, number]) => {
+    const destLat = coords[0];
+    const destLng = coords[1];
+
+    let url = `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}`;
+
+    // If we have the user's location, add it as the origin for better accuracy
+    if (userLocation) {
+      const originLat = userLocation[0];
+      const originLng = userLocation[1];
+      url += `&origin=${originLat},${originLng}`;
+    }
+
+    window.open(url, '_blank');
+  };
+
   return (
     <PageContainer>
       <header className="safe-top px-6 pt-6 pb-2">
@@ -213,41 +229,57 @@ export default function Peta() {
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <AnimatePresence mode="popLayout">
               {locations.map((location, index) => (
-                <motion.button
+                <motion.div
                   key={location.id}
                   layout
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  onClick={() => handleLocationSelect(location)}
-                  className={`w-full text-left bg-card rounded-2xl p-4 border transition-all duration-300 flex items-center gap-4 ${activeLocation.id === location.id
+                  className={`bg-card rounded-2xl border transition-all duration-300 overflow-hidden ${activeLocation.id === location.id
                     ? 'border-primary ring-1 ring-primary/20 shadow-md ring-offset-0'
                     : 'border-border hover:border-primary/50'
                     }`}
                 >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${activeLocation.id === location.id ? 'bg-primary text-white' : 'bg-primary/10 text-primary'
-                    }`}>
-                    <MapPin className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1">
-                    <p className={`font-bold transition-colors ${activeLocation.id === location.id ? 'text-primary' : 'text-foreground'
+                  <button
+                    onClick={() => handleLocationSelect(location)}
+                    className="w-full text-left p-4 flex items-center gap-4"
+                  >
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${activeLocation.id === location.id ? 'bg-primary text-white' : 'bg-primary/10 text-primary'
                       }`}>
-                      {location.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                      {location.description}
-                    </p>
-                  </div>
+                      <MapPin className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <p className={`font-bold transition-colors ${activeLocation.id === location.id ? 'text-primary' : 'text-foreground'
+                        }`}>
+                        {location.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                        {location.description}
+                      </p>
+                    </div>
+                  </button>
+
                   {activeLocation.id === location.id && (
                     <motion.div
-                      layoutId="active-indicator"
-                      className="w-2 h-2 rounded-full bg-primary"
-                    />
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      className="px-4 pb-4 bg-primary/5 border-t border-primary/10"
+                    >
+                      <div className="pt-3">
+                        <button
+                          onClick={() => handleGetDirections(location.coords)}
+                          className="w-full bg-primary text-white py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm"
+                        >
+                          <Navigation className="w-4 h-4 rotate-45" />
+                          Petunjuk Arah (Maps)
+                        </button>
+                      </div>
+                    </motion.div>
                   )}
-                </motion.button>
+                </motion.div>
               ))}
             </AnimatePresence>
           </div>
