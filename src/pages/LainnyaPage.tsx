@@ -2,11 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { useApp } from '@/contexts/AppContext';
-import { Settings, Download, RefreshCw, Info, ChevronRight, Volume2 } from 'lucide-react';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { Settings, Download, RefreshCw, Info, ChevronRight, Volume2, Smartphone, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Lainnya() {
   const { mode, audioLanguage, resetApp } = useApp();
+  const { isInstallable, isInstalled, install } = usePWAInstall();
   const navigate = useNavigate();
 
   const modeLabels: Record<string, string> = {
@@ -34,25 +36,33 @@ export default function Lainnya() {
       icon: Settings,
       title: 'Pengaturan Mode',
       description: mode ? modeLabels[mode] : '-',
-      action: () => {},
+      action: () => { },
     },
     {
       icon: Volume2,
       title: 'Bahasa Audio',
       description: audioLanguage ? languageLabels[audioLanguage] : '-',
-      action: () => {},
+      action: () => { },
     },
+    // PWA Install option - only show if installable or installed
+    ...((isInstallable || isInstalled) ? [{
+      icon: isInstalled ? Check : Smartphone,
+      title: isInstalled ? 'Aplikasi Terinstall' : 'Install Aplikasi',
+      description: isInstalled ? 'Manasik sudah diinstall di perangkat' : 'Akses lebih cepat & offline',
+      action: isInstalled ? () => { } : install,
+      highlight: !isInstalled,
+    }] : []),
     {
       icon: Download,
       title: 'Unduh Audio Offline',
       description: 'Simpan audio untuk digunakan tanpa internet',
-      action: () => {},
+      action: () => { },
     },
     {
       icon: Info,
       title: 'Tentang Aplikasi',
       description: 'Versi 1.0.0',
-      action: () => {},
+      action: () => { },
     },
     {
       icon: RefreshCw,
@@ -90,32 +100,32 @@ export default function Lainnya() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
                 onClick={item.action}
-                className={`w-full p-4 rounded-xl border text-left flex items-center gap-4 transition-colors ${
-                  item.destructive
+                className={`w-full p-4 rounded-xl border text-left flex items-center gap-4 transition-colors ${item.destructive
                     ? 'bg-destructive/5 border-destructive/20 hover:bg-destructive/10'
-                    : 'bg-card border-border hover:bg-muted/50'
-                }`}
+                    : item.highlight
+                      ? 'bg-primary/5 border-primary/30 hover:bg-primary/10'
+                      : 'bg-card border-border hover:bg-muted/50'
+                  }`}
               >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  item.destructive
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.destructive
                     ? 'bg-destructive/10 text-destructive'
-                    : 'bg-muted text-muted-foreground'
-                }`}>
+                    : item.highlight
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted text-muted-foreground'
+                  }`}>
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`font-medium ${
-                    item.destructive ? 'text-destructive' : 'text-foreground'
-                  }`}>
+                  <p className={`font-medium ${item.destructive ? 'text-destructive' : 'text-foreground'
+                    }`}>
                     {item.title}
                   </p>
                   <p className="text-sm text-muted-foreground truncate">
                     {item.description}
                   </p>
                 </div>
-                <ChevronRight className={`w-5 h-5 ${
-                  item.destructive ? 'text-destructive/50' : 'text-muted-foreground'
-                }`} />
+                <ChevronRight className={`w-5 h-5 ${item.destructive ? 'text-destructive/50' : 'text-muted-foreground'
+                  }`} />
               </motion.button>
             );
           })}

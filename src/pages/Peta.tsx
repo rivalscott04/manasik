@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PageContainer } from '@/components/layout/PageContainer';
-import { MapPin, Navigation } from 'lucide-react';
+import { MapPin, Navigation, Locate, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -28,9 +28,13 @@ const locations = [
 
 export default function Peta() {
   const [activeLocation, setActiveLocation] = useState(locations[0]);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<L.Marker[]>([]);
+  const userMarkerRef = useRef<L.Marker | null>(null);
 
   // Initialize map
   useEffect(() => {
@@ -85,6 +89,60 @@ export default function Peta() {
     }
   };
 
+  // Request user location
+  const handleRequestLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation tidak didukung di browser ini');
+      return;
+    }
+
+    setIsLocating(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords: [number, number] = [position.coords.latitude, position.coords.longitude];
+        setUserLocation(coords);
+        setIsLocating(false);
+
+        // Add or update user marker
+        if (mapRef.current) {
+          if (userMarkerRef.current) {
+            userMarkerRef.current.setLatLng(coords);
+          } else {
+            const userIcon = L.divIcon({
+              className: 'user-location-marker',
+              html: '<div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>',
+              iconSize: [16, 16],
+              iconAnchor: [8, 8],
+            });
+            userMarkerRef.current = L.marker(coords, { icon: userIcon })
+              .addTo(mapRef.current)
+              .bindPopup('<b>Lokasi Anda</b>');
+          }
+          mapRef.current.setView(coords, 16, { animate: true });
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError('Izin lokasi ditolak. Aktifkan izin lokasi di pengaturan browser.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError('Lokasi tidak tersedia.');
+            break;
+          case error.TIMEOUT:
+            setLocationError('Permintaan lokasi timeout.');
+            break;
+          default:
+            setLocationError('Gagal mendapatkan lokasi.');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
   return (
     <PageContainer>
       <header className="safe-top px-6 pt-6 pb-2">
@@ -122,7 +180,26 @@ export default function Peta() {
           >
             <Navigation className="w-5 h-5" />
           </button>
+
+          <button
+            onClick={handleRequestLocation}
+            disabled={isLocating}
+            className="absolute bottom-4 right-16 z-[1000] bg-white dark:bg-slate-800 p-2 rounded-full shadow-md border border-border text-blue-500 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            {isLocating ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Locate className="w-5 h-5" />
+            )}
+          </button>
         </motion.div>
+
+        {/* Location Error Message */}
+        {locationError && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-2 rounded-xl text-sm">
+            {locationError}
+          </div>
+        )}
 
         {/* Location List */}
         <section className="pb-8">
@@ -147,8 +224,8 @@ export default function Peta() {
                   transition={{ delay: index * 0.05 }}
                   onClick={() => handleLocationSelect(location)}
                   className={`w-full text-left bg-card rounded-2xl p-4 border transition-all duration-300 flex items-center gap-4 ${activeLocation.id === location.id
-                      ? 'border-primary ring-1 ring-primary/20 shadow-md ring-offset-0'
-                      : 'border-border hover:border-primary/50'
+                    ? 'border-primary ring-1 ring-primary/20 shadow-md ring-offset-0'
+                    : 'border-border hover:border-primary/50'
                     }`}
                 >
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${activeLocation.id === location.id ? 'bg-primary text-white' : 'bg-primary/10 text-primary'
