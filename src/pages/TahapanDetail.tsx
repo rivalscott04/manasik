@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/contexts/AppContext';
-import { ArrowLeft, Play, Pause, SkipForward, Check, Volume2 } from 'lucide-react';
+import { ArrowLeft, SkipForward, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AudioPlayer } from '@/components/audio/AudioPlayer';
+import { getAudioPath } from '@/lib/audio-utils';
 
 interface TahapanInfo {
   title: string;
@@ -128,44 +130,20 @@ export default function TahapanDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { mode, currentStep, setCurrentStep, totalSteps, audioLanguage } = useApp();
-  
+
   const stepNumber = parseInt(id || '1', 10);
   const tahapan = tahapanData[stepNumber];
-  
-  const [isPlaying, setIsPlaying] = useState(false);
+
   const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
 
   const isElderly = mode === 'lansia';
   const isLastStep = stepNumber === totalSteps;
 
-  // Auto-play audio for elderly mode
-  useEffect(() => {
-    if (isElderly && !hasPlayedAudio) {
-      // Simulate auto-play
-      setIsPlaying(true);
-      const timer = setTimeout(() => {
-        setIsPlaying(false);
-        setHasPlayedAudio(true);
-      }, 3000); // Simulated audio duration
-      return () => clearTimeout(timer);
-    }
-  }, [isElderly, hasPlayedAudio]);
-
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-    if (!isPlaying && !hasPlayedAudio) {
-      setTimeout(() => {
-        setHasPlayedAudio(true);
-        setIsPlaying(false);
-      }, 3000);
-    }
-  };
-
   const handleComplete = () => {
     if (stepNumber >= currentStep) {
       setCurrentStep(stepNumber + 1);
     }
-    
+
     if (isLastStep) {
       navigate('/');
     } else {
@@ -189,12 +167,7 @@ export default function TahapanDetail() {
     );
   }
 
-  const languageLabels: Record<string, string> = {
-    indonesia: 'Indonesia',
-    sasak: 'Sasak',
-    samawa: 'Samawa',
-    mbojo: 'Mbojo',
-  };
+  const audioSrc = getAudioPath(audioLanguage, 'manasik', `tahapan-${stepNumber}.mp3`);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -220,37 +193,36 @@ export default function TahapanDetail() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-6 py-4 overflow-auto pb-32">
+      <main className="flex-1 px-6 py-4 overflow-auto pb-48">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
           {/* Description */}
-          <p className={`text-muted-foreground ${isElderly ? 'text-elderly-base' : ''}`}>
+          <p className={`text-muted-foreground leading-relaxed ${isElderly ? 'text-elderly-base' : ''}`}>
             {tahapan.description}
           </p>
 
           {/* Steps */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <h2 className={`font-semibold ${isElderly ? 'text-elderly-lg' : 'text-lg'}`}>
               Langkah-langkah:
             </h2>
-            <ol className="space-y-3">
+            <ol className="space-y-4">
               {tahapan.steps.map((step, index) => (
                 <motion.li
                   key={index}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex gap-3"
+                  className="flex gap-4"
                 >
-                  <span className={`w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-semibold ${
-                    isElderly ? 'text-base' : 'text-sm'
-                  }`}>
+                  <span className={`w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold ${isElderly ? 'text-lg' : 'text-sm'
+                    }`}>
                     {index + 1}
                   </span>
-                  <p className={`text-foreground pt-0.5 ${isElderly ? 'text-elderly-base' : ''}`}>
+                  <p className={`text-foreground pt-1 ${isElderly ? 'text-elderly-base' : ''}`}>
                     {step}
                   </p>
                 </motion.li>
@@ -261,72 +233,47 @@ export default function TahapanDetail() {
       </main>
 
       {/* Fixed Audio Player & Actions */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border safe-bottom">
-        {/* Audio Player */}
-        <div className="px-6 py-4 border-b border-border">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handlePlayPause}
-              className={`w-14 h-14 rounded-full flex items-center justify-center ${
-                isPlaying ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'
-              }`}
-              aria-label={isPlaying ? 'Jeda audio' : 'Putar audio'}
-            >
-              {isPlaying ? (
-                <Pause className="w-6 h-6" />
-              ) : (
-                <Play className="w-6 h-6 ml-1" />
-              )}
-            </button>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Volume2 className="w-4 h-4 text-muted-foreground" />
-                <p className="text-sm font-medium">
-                  Audio {audioLanguage ? languageLabels[audioLanguage] : 'Indonesia'}
-                </p>
-              </div>
-              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-primary"
-                  animate={{ width: isPlaying ? '100%' : '0%' }}
-                  transition={{ duration: 3, ease: 'linear' }}
-                />
-              </div>
-            </div>
-          </div>
+      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border safe-bottom shadow-lg z-50">
+        {/* Real Audio Player */}
+        <div className="px-6 py-5 border-b border-border bg-card/50">
+          <AudioPlayer
+            src={audioSrc}
+            autoPlay={isElderly}
+            mode={mode}
+            label={`Tahap ${stepNumber}: ${tahapan.title}`}
+            onEnded={() => setHasPlayedAudio(true)}
+          />
         </div>
 
         {/* Action Buttons */}
-        <div className="px-6 py-4 space-y-3">
+        <div className="px-6 py-4">
           {isElderly ? (
-            <>
+            <div className="space-y-3">
               <Button
                 variant="elderly"
                 onClick={handleComplete}
-                disabled={!hasPlayedAudio}
-                className="w-full gap-2"
+                className="w-full gap-3 py-8"
               >
-                <Check className="w-5 h-5" />
-                Saya Sudah Selesai
+                <Check className="w-6 h-6" />
+                SAYA SUDAH SELESAI
               </Button>
               {!isLastStep && (
                 <Button
                   variant="elderlySecondary"
                   onClick={handleComplete}
-                  disabled={!hasPlayedAudio}
-                  className="w-full gap-2"
+                  className="w-full gap-3 py-6"
                 >
-                  <SkipForward className="w-5 h-5" />
-                  Lanjut
+                  <SkipForward className="w-6 h-6" />
+                  LANJUT KE TAHAP BERIKUTNYA
                 </Button>
               )}
-            </>
+            </div>
           ) : (
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <Button
                 variant="outline"
                 onClick={handleComplete}
-                className="flex-1"
+                className="flex-1 h-12"
               >
                 <Check className="w-5 h-5 mr-2" />
                 Selesai
@@ -334,7 +281,7 @@ export default function TahapanDetail() {
               {!isLastStep && (
                 <Button
                   onClick={handleComplete}
-                  className="flex-1"
+                  className="flex-1 h-12"
                 >
                   Lanjut
                   <SkipForward className="w-5 h-5 ml-2" />
