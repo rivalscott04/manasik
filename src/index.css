@@ -1,0 +1,240 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  Manasik Haji Design System
+  Islamic-themed, accessibility-first design
+  All colors in HSL format
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* Primary - Zamrud Green */
+    --primary: 162 59% 28%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary - Clean White */
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 162 59% 28%;
+    
+    /* Background - Soft Gray White */
+    --background: 150 14% 97%;
+    --foreground: 162 59% 15%;
+    
+    /* Card surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 162 59% 15%;
+    
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 162 59% 15%;
+    
+    /* Muted surfaces */
+    --muted: 150 10% 94%;
+    --muted-foreground: 162 20% 40%;
+    
+    /* Accent - Gold */
+    --accent: 42 50% 54%;
+    --accent-foreground: 42 60% 20%;
+    
+    /* Islamic Gold for special elements */
+    --gold: 42 50% 54%;
+    --gold-light: 42 50% 90%;
+    --gold-foreground: 42 60% 15%;
+    
+    /* Calm Blue for links */
+    --info: 210 50% 37%;
+    --info-foreground: 0 0% 100%;
+    
+    /* Status colors */
+    --success: 122 39% 34%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 45 96% 56%;
+    --warning-foreground: 45 80% 15%;
+    
+    --destructive: 0 70% 47%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Border and input */
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 162 59% 28%;
+    
+    --radius: 0.75rem;
+    
+    /* Sidebar (for future use) */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 162 59% 15%;
+    --sidebar-primary: 162 59% 28%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 10% 94%;
+    --sidebar-accent-foreground: 162 59% 15%;
+    --sidebar-border: 150 15% 88%;
+    --sidebar-ring: 162 59% 28%;
+
+    /* Typography */
+    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-arabic: 'Amiri', serif;
+    
+    /* Spacing for accessibility */
+    --touch-target: 48px;
+    --touch-target-elderly: 56px;
+    
+    /* Animation */
+    --transition-base: 200ms ease;
+  }
+
+  .dark {
+    --background: 162 40% 8%;
+    --foreground: 150 20% 95%;
+    
+    --card: 162 35% 12%;
+    --card-foreground: 150 20% 95%;
+    
+    --popover: 162 35% 12%;
+    --popover-foreground: 150 20% 95%;
+    
+    --primary: 162 50% 45%;
+    --primary-foreground: 162 40% 8%;
+    
+    --secondary: 162 30% 18%;
+    --secondary-foreground: 150 20% 95%;
+    
+    --muted: 162 30% 15%;
+    --muted-foreground: 150 15% 60%;
+    
+    --accent: 42 45% 50%;
+    --accent-foreground: 42 50% 95%;
+    
+    --gold: 42 45% 50%;
+    --gold-light: 42 30% 20%;
+    --gold-foreground: 42 50% 95%;
+    
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 162 30% 20%;
+    --input: 162 30% 20%;
+    --ring: 162 50% 45%;
+    
+    --sidebar-background: 162 35% 10%;
+    --sidebar-foreground: 150 20% 95%;
+    --sidebar-primary: 162 50% 45%;
+    --sidebar-primary-foreground: 162 40% 8%;
+    --sidebar-accent: 162 30% 15%;
+    --sidebar-accent-foreground: 150 20% 95%;
+    --sidebar-border: 162 30% 20%;
+    --sidebar-ring: 162 50% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  /* Arabic text styling */
+  .arabic-text {
+    font-family: var(--font-arabic);
+    direction: rtl;
+    line-height: 1.8;
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Large touch-friendly button for elderly */
+  .btn-elderly {
+    @apply min-h-[56px] px-8 text-lg font-semibold rounded-xl;
+  }
+
+  /* Standard accessible button */
+  .btn-accessible {
+    @apply min-h-[48px] px-6 text-base font-medium rounded-lg;
+  }
+
+  /* Gold divider for section breaks */
+  .divider-gold {
+    @apply h-px bg-gradient-to-r from-transparent via-accent to-transparent;
+  }
+
+  /* Card with Islamic styling */
+  .card-islamic {
+    @apply bg-card rounded-2xl border border-border shadow-sm;
+  }
+
+  /* Progress indicator */
+  .progress-step {
+    @apply h-2 rounded-full bg-muted;
+  }
+
+  .progress-step-active {
+    @apply bg-primary;
+  }
+
+  /* Audio player container */
+  .audio-player-container {
+    @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 shadow-lg;
+  }
+}
+
+@layer utilities {
+  /* Safe area for mobile */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 16px);
+  }
+
+  /* Text sizes for elderly mode */
+  .text-elderly-base {
+    @apply text-lg leading-relaxed;
+  }
+
+  .text-elderly-lg {
+    @apply text-xl leading-relaxed;
+  }
+
+  .text-elderly-xl {
+    @apply text-2xl leading-relaxed;
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-islamic {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(162 59% 22%) 100%);
+  }
+
+  .bg-gradient-gold {
+    background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(42 55% 45%) 100%);
+  }
+}

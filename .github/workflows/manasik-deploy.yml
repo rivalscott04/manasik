@@ -1,0 +1,39 @@
+name: manasik deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_SECRET }}
+          script: |
+            echo "🚀 Memulai proses deployment Manasik..."
+            echo "📂 Masuk ke direktori project..."
+            cd /var/www/manasik
+            
+            echo "⬇️ Mengambil code terbaru dari repository..."
+            git pull origin master
+            echo "✅ Code terbaru sudah diupdate!"
+            
+            echo "📦 Menginstall dependencies (tanpa upgrade)..."
+            bun install --frozen-lockfile
+            echo "✅ Dependencies berhasil diinstall!"
+            
+            echo "🔨 Tunggu sebentar ya, sedang build jadi bundle..."
+            bun run build
+            echo "✅ Build selesai!"
+            
+            echo "🎉 Deployment berhasil! Aplikasi Manasik sudah terupdate."

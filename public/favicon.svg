@@ -1,0 +1,19 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="100" height="100" fill="#1a1a1a" rx="10"/>
+  
+  <!-- Ka'bah Structure -->
+  <rect x="25" y="30" width="50" height="50" fill="#000000"/>
+  
+  <!-- Kiswah (Gold Belt) -->
+  <rect x="25" y="45" width="50" height="5" fill="#C5A021"/>
+  
+  <!-- Door of Ka'bah -->
+  <rect x="55" y="60" width="10" height="20" fill="#C5A021"/>
+  
+  <!-- Top Highlight -->
+  <path d="M25 30 L75 30 L65 25 L35 25 Z" fill="#333333"/>
+  
+  <!-- Glow Effect -->
+  <circle cx="50" cy="55" r="35" fill="none" stroke="#C5A021" stroke-width="0.5" opacity="0.5"/>
+</svg>
