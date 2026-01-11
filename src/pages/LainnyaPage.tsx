@@ -6,7 +6,7 @@ import { usePWAInstall } from '@/hooks/usePWAInstall';
 import {
   Settings, Download, RefreshCw, Info, ChevronRight, Volume2,
   Smartphone, Check, User, Users, Accessibility,
-  Globe, AlertTriangle
+  Globe, AlertTriangle, Heart
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {
@@ -41,8 +41,8 @@ function OptionCard({ icon, title, description, selected, onClick }: OptionCardP
     <button
       onClick={onClick}
       className={`w-full p-4 rounded-2xl border text-left flex items-center gap-4 transition-all ${selected
-          ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-          : 'border-border bg-card hover:border-primary/50'
+        ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+        : 'border-border bg-card hover:border-primary/50'
         }`}
     >
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${selected ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
@@ -216,7 +216,7 @@ export default function Lainnya() {
             <MenuItem
               icon={Info}
               title="Tentang Aplikasi"
-              description="Versi 1.0.0"
+              description="Versi 1.1.0"
               onClick={() => setAboutSheetOpen(true)}
             />
           </motion.div>
@@ -240,8 +240,14 @@ export default function Lainnya() {
           transition={{ delay: 0.4 }}
           className="mt-8 text-center pb-8"
         >
-          <p className="text-sm text-muted-foreground">Panduan Manasik Haji</p>
-          <p className="text-xs text-muted-foreground mt-1">Audio dalam bahasa daerah Sasambo</p>
+          <div className="flex flex-col items-center justify-center gap-1">
+            <p className="text-sm text-muted-foreground">Panduan Manasik Haji</p>
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/60 uppercase tracking-widest font-medium mt-2">
+              <span>Dibuat dengan</span>
+              <Heart className="w-3 h-3 text-red-500 fill-red-500" />
+              <span>oleh Kanwil Kemenhaj NTB</span>
+            </div>
+          </div>
         </motion.div>
       </main>
 
@@ -304,17 +310,23 @@ export default function Lainnya() {
           </SheetHeader>
           <div className="space-y-4 pb-6">
             <div className="bg-muted rounded-2xl p-4">
-              <p className="font-semibold text-foreground">Manasik Haji</p>
-              <p className="text-sm text-muted-foreground mt-1">Versi 1.0.0</p>
+              <p className="font-semibold text-foreground text-primary">Manasik Haji SASAMBO</p>
+              <p className="text-sm text-muted-foreground mt-1">Versi 1.1.0</p>
             </div>
             <div className="space-y-2 text-sm text-muted-foreground">
               <p>Aplikasi panduan manasik haji yang dirancang khusus untuk jamaah haji dari Provinsi Nusa Tenggara Barat.</p>
               <p>Dilengkapi audio panduan dalam bahasa daerah Sasambo (Sasak, Samawa, Mbojo) untuk memudahkan pemahaman.</p>
             </div>
-            <div className="pt-4 border-t border-border">
-              <p className="text-xs text-muted-foreground text-center">
-                Kantor Wilayah Kementerian Haji dan Umroh Provinsi NTB
-              </p>
+            <div className="pt-6 border-t border-border mt-2">
+              <div className="flex flex-col items-center justify-center gap-2">
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
+                  <span>Dibuat dengan</span>
+                  <Heart className="w-3 h-3 text-red-500 fill-red-500" />
+                </div>
+                <p className="text-xs font-bold text-foreground text-center max-w-[200px] leading-tight text-primary">
+                  Kantor Wilayah Kementerian Haji dan Umroh Provinsi NTB
+                </p>
+              </div>
             </div>
           </div>
         </SheetContent>

@@ -17,9 +17,9 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "og-image.png"],
       manifest: {
-        name: "Manasik Haji - Kemenhaj NTB",
-        short_name: "Manasik",
-        description: "Aplikasi Panduan Manasik Haji Lengkap untuk Jamaah Haji NTB",
+        name: "Manasik Haji SASAMBO - Kemenhaj NTB",
+        short_name: "SASAMBO",
+        description: "Aplikasi Panduan Manasik Haji SASAMBO Lengkap untuk Jamaah Haji NTB",
         theme_color: "#2E7D32",
         background_color: "#ffffff",
         display: "standalone",
